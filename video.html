@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Page</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .video-container, .trailer-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      width: 100%;
+      box-sizing: border-box;
+      text-align: center; /* Center align video player */
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .season-dropdown {
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5));   /* Change background */
+      color: white;             /* Change text color */
+      border: 1px solid white;  /* Add border */
+      padding: 5px;             /* Add padding */
+      border-radius: 5px;       /* Rounded corners */
+    }
+    .season-dropdown option:hover {
+      background-color: #444;
+    }
+    .iframe-container {
+      width: 100%;
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      height: 0;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+    }
+    .iframe-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+    }
+    .video-details {
+      display: flex; /* Match flex behavior */
+      justify-content: center; /* Center content horizontally */
+      align-items: center; /* Center content vertically */
+      flex-direction: column; /* Stack elements inside */
+      padding: 10px; /* Match padding */
+      background-color: #333;
+      border-radius: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      width: 100%; /* Match the video container width */
+      box-sizing: border-box;
+      text-align: center; /* Center text inside */
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .video-details h2 {
+      font-size: 24px; /* Increase the font size of the video title */
+      margin: 0;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #444;
+    }
+    
+    .episode-list {
+      margin: 20px 0;
+      display: flex;
+      justify-content: center; /* Center align episode list */
+      flex-wrap: wrap;
+      font-size: 18px; /* Adjust the font size for episode buttons */
+    }
+    .episode-list button {
+      background-color: #444;
+      color: #00ab41;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    }
+    .episode-list button:hover {
+      background-color: #00ab41;
+      color: #000;
+      transform: translateY(-4px);
+    }
+    .episode-list button.active {
+      background-color: #00ab41;
+      color: #000;
+    }
+    @media (max-width: 600px) {
+      .video-details {
+        max-width: 80%;
+        padding: 2px;
+        height: auto;
+      }
+      .video-details h2 {
+        font-size: 20px;
+        font-weight: 500;
+      }
+      .video-container, .trailer-container {
+        max-width: 94%;
+        padding: 10px;
+        height: auto;
+      }
+      .iframe-container {
+        width: 94%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+      }
+    }
+     
+    @media (min-width: 601px) and (max-width: 1200px) {
+      .video-details {
+        max-width: 75%;
+        padding: 20px;
+        height: auto;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .video-container, .trailer-container {
+        max-width: 75%;
+        padding: 20px;
+        height: auto;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+
+    @media (min-width: 1201px) {
+      .video-container, .video-details, .trailer-container {
+        max-width: 60%;
+        padding: 20px;
+        height: auto;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+    
+    body { 
+      font-family: Arial, sans-serif; 
+      margin: 0; 
+      padding: 0; 
+      background: #222; 
+      color: white; 
+    }
+    .navbar { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.5)); 
+      padding: 15px 30px; 
+      box-shadow: 0px 4px 6px rgba(0,0,0,0.2); 
+      transition: top 0.3s ease-in-out;
+      position: relative; 
+      z-index: 1000;
+    }
+    .navbar.fixed { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      right: 0; 
+    }
+    .logo { 
+      display: flex; 
+      align-items: center; 
+      cursor: pointer; 
+      font-size: 1.5em; 
+      font-weight: bold; 
+      color: white; 
+    }
+    .nav-links { 
+      display: flex; 
+      align-items: center; 
+    }
+    .nav-links a, .dropdown { 
+      margin-left: 20px; 
+      color: white; 
+      text-decoration: none; 
+      cursor: pointer; 
+      font-size: 1.1em; 
+    }
+    .dropdown-content { 
+      display: none; 
+      position: absolute; 
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)); 
+      color: white; 
+      top: 50px; 
+      left: auto; 
+      min-width: 150px; 
+      box-shadow: 0px 4px 6px rgba(0,0,0,0.2); 
+      border-radius: 5px; 
+      overflow: hidden; 
+    }
+    .dropdown-content a { 
+      display: block; 
+      padding: 10px; 
+      text-decoration: none; 
+      color: white; 
+      transition: background 0.3s; 
+    }
+    .dropdown-content a:hover { 
+      background-color: #ddd; 
+    }
+    .search-container { 
+      position: relative; 
+      margin-left: 20px; 
+    }
+    .search-box { 
+      padding: 8px; 
+      border-radius: 5px; 
+      border: 1px solid white; 
+      font-size: 1em; 
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0)); 
+      color: white; 
+      width: 150px;
+    }
+    .search-results { 
+      display: none; 
+      position: absolute; 
+      top: 100%; 
+      left: 0; 
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)); 
+      color: white; 
+      width: 180px; 
+      font-size: 0.95em; 
+      max-height: 250px; 
+      overflow-y: auto; 
+      box-shadow: 0px 4px 6px rgba(0,0,0,0.2); 
+      border-radius: 5px; 
+    }
+    .search-results div { 
+      display: flex; 
+      align-items: center; 
+      padding: 10px; 
+      cursor: pointer; 
+      transition: background 0.3s; 
+    }
+    .search-results div:hover { 
+      background: #ddd; 
+    }
+    .search-results img { 
+      width: 50px; 
+      margin-right: 10px; 
+      border-radius: 5px; 
+    }
+    .category-section {
+      margin: 20px 20px 20px 20px; 
+    }
+    .category-section h2 {
+      font-size: 1.5em; 
+      color: white;
+      display: inline-block;
+    }
+    .view-all-button {
+      display: inline-block;
+      margin-left: 20px;
+      padding: 8px 16px;
+      font-size: 1em;
+      color: white;
+      background: rgba(0, 0, 0, 0.7);
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .view-all-button:hover {
+      background: rgba(0, 0, 0, 0.9);
+    }
+    .video-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: flex-start;
+    }
+    .video-item {
+      position: relative;
+      width: 220px;
+      background-color: transparent;
+      text-align: center;
+      transition: background-color 0.3s;
+    }
+    .video-item:hover {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+    .video-item img {
+      width: 100%;
+      border-radius: 8px;
+    }
+    .video-item span {
+      position: absolute;
+      top: 0; 
+      left: 0;
+      right: 0; 
+      padding: 10px;
+      font-size: 1em; 
+      color: white;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 5px 5px 0 0; 
+      z-index: 1;
+      width: 100%;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    @media (max-width: 767px) {
+      .nav-links a:first-child { 
+        display: none; 
+      }
+      .search-box { 
+        width: 150px; 
+        font-size: 0.9em; 
+      }
+      .video-grid {
+        display: flex;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        gap: 10px;
+        padding: 10px 0;
+      }
+      .video-item {
+        width: 140px;
+        flex-shrink: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo" onclick="window.location.href = 'index.html'">P-Series</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <div class="dropdown">
+        Categories
+        <div class="dropdown-content" id="category-list"></div>
+      </div>
+      <div class="search-container">
+        <input type="text" id="search-box" class="search-box" placeholder="Search...">
+        <div id="search-results" class="search-results"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="video-container" id="video-container">
+    <div class="iframe-container" id="iframe-container" style="display: none;"></div>
+  </div>
+
+  <div class="video-details">
+    <h2 id="video-title"></h2>
+    <div class="season-selection">
+  <label id="season-label" for="season-dropdown">Select Season:</label>
+  <select id="season-dropdown" class="season-dropdown"></select>
+</div>
+    <div class="episode-list" id="episode-list"></div>
+  </div>
+
+  <!-- New Trailer Section -->
+  <div class="trailer-container" id="trailer-container" style="display: none;">
+    <div class="iframe-container" id="trailer-iframe-container"></div>
+  </div>
+
+  <script>
+    const searchInput = document.getElementById('search-box');
+    const searchResultsContainer = document.getElementById('search-results');
+    const iframeContainer = document.getElementById('iframe-container');
+    const trailerContainer = document.getElementById('trailer-container');
+    const trailerIframeContainer = document.getElementById('trailer-iframe-container');
+    const episodeList = document.getElementById('episode-list');
+    const categoryList = document.getElementById('category-list');
+
+    function loadVideo(video) {
+      if (!video) {
+        document.getElementById('video-title').innerText = "Video not found";
+        return;
+      }
+
+      document.getElementById('video-title').innerText = `${video.name} - ${video.episode_name}`;
+
+      // Dynamically set the webpage title to the episode's title
+      document.title = `${video.name} - ${video.episode_name}`;
+
+      if (video.embed_code) {
+        iframeContainer.innerHTML = video.embed_code;
+        iframeContainer.style.display = 'block';
+      } else {
+        iframeContainer.style.display = 'none';
+      }
+
+      // Highlight the current episode button
+      const buttons = episodeList.getElementsByTagName('button');
+      for (let button of buttons) {
+        if (button.dataset.episodeId === video.episode_id) {
+          button.classList.add('active');
+        } else {
+          button.classList.remove('active');
+        }
+      }
+    }
+
+    function loadEpisodes(episodes, currentEpisodeId) {
+      episodeList.innerHTML = '';
+      episodes.forEach(episode => {
+        const button = document.createElement('button');
+        button.innerText = episode.episode_name;
+        button.dataset.episodeId = episode.episode_id;
+        button.onclick = () => {
+          loadVideo(episode);
+        };
+        if (episode.episode_id === currentEpisodeId) {
+          button.classList.add('active');
+        }
+        episodeList.appendChild(button);
+      });
+    }
+
+    function parseCSV(text) {
+      const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+      const headers = lines.shift().split(',').map(header => header.trim());
+      const result = [];
+
+      lines.forEach(line => {
+        const currentline = line.split(',').map(value => value.trim());
+        if (currentline.length === headers.length) {
+          const obj = {};
+          headers.forEach((header, index) => {
+            obj[header] = currentline[index];
+          });
+          result.push(obj);
+        }
+      });
+
+      return result;
+    }
+
+    fetch('https://docs.google.com/spreadsheets/d/13DtVl3qs44uQxP_XX4fUct8E7e2ooO3Pc5fAesY06ek/edit?usp=sharing')
+      .then(response => response.text())
+      .then(text => {
+        const data = parseCSV(text);
+        const videoId = new URLSearchParams(window.location.search).get('id');
+        const series = data.find(v => v.id === videoId);
+        if (series) {
+          const currentEpisode = series;
+          loadVideo(currentEpisode);
+          const episodes = data.filter(v => v.id === series.id);
+          loadEpisodes(episodes, currentEpisode.episode_id);
+
+          // Load and display trailer
+          const trailerEmbedCode = series.trailer;
+          if (trailerEmbedCode) {
+            trailerIframeContainer.innerHTML = trailerEmbedCode;
+            trailerContainer.style.display = 'block';
+          }
+        } else {
+          document.getElementById('video-title').innerText = "Video not found";
+        }
+const seasonDropdown = document.getElementById('season-dropdown');
+
+// Function to load seasons dynamically
+function loadSeasons(seasons, currentSeasonId) {
+  seasonDropdown.innerHTML = ''; // Clear previous options
+  seasons.forEach(season => {
+    const option = document.createElement('option');
+    option.value = season.season_id;
+    option.innerText = season.season_name;
+    if (season.season_id === currentSeasonId) {
+      option.selected = true;
+    }
+    seasonDropdown.appendChild(option);
+  });
+
+  seasonDropdown.style.display = seasons.length > 1 ? 'block' : 'none'; // Hide if only one season
+}
+
+// Function to handle season selection
+seasonDropdown.addEventListener('change', function () {
+  const selectedSeasonId = this.value;
+  const filteredEpisodes = allEpisodes.filter(ep => ep.season_id === selectedSeasonId);
+  if (filteredEpisodes.length > 0) {
+    loadVideo(filteredEpisodes[0]); // Load first episode by default
+    loadEpisodes(filteredEpisodes, filteredEpisodes[0].episode_id);
+  }
+});
+
+let allEpisodes = []; // Store all episodes of the series
+
+fetch('https://docs.google.com/spreadsheets/d/13DtVl3qs44uQxP_XX4fUct8E7e2ooO3Pc5fAesY06ek/edit?usp=sharing')
+  .then(response => response.text())
+  .then(text => {
+    const data = parseCSV(text);
+    const videoId = new URLSearchParams(window.location.search).get('id');
+    const series = data.find(v => v.id === videoId);
+
+    if (series) {
+      allEpisodes = data.filter(v => v.id === series.id);
+      const uniqueSeasons = [...new Map(allEpisodes.map(ep => [ep.season_id, ep])).values()];
+
+      // Load the first season by default
+      const defaultSeason = uniqueSeasons[0];
+      loadSeasons(uniqueSeasons, defaultSeason.season_id);
+      
+      // Load episodes for the default season
+      const initialEpisodes = allEpisodes.filter(ep => ep.season_id === defaultSeason.season_id);
+      loadVideo(initialEpisodes[0]); // Load first episode
+      loadEpisodes(initialEpisodes, initialEpisodes[0].episode_id);
+      
+      // Load and display trailer
+      if (series.trailer) {
+        trailerIframeContainer.innerHTML = series.trailer;
+        trailerContainer.style.display = 'block';
+      }
+    } else {
+      document.getElementById('video-title').innerText = "Video not found";
+    }
+  })
+  .catch(error => {
+    console.error('Error loading video data:', error);
+    document.getElementById('video-title').innerText = "Error loading video";
+  });
+    const seasonLabel = document.getElementById('season-label');
+
+function loadSeasons(seasons, currentSeasonId) {
+  seasonDropdown.innerHTML = ''; // Clear previous options
+  
+  seasons.forEach(season => {
+    const option = document.createElement('option');
+    option.value = season.season_id;
+    option.innerText = season.season_name;
+    if (season.season_id === currentSeasonId) {
+      option.selected = true;
+    }
+    seasonDropdown.appendChild(option);
+  });
+
+  // Hide the label if there's only one or no seasons
+  seasonLabel.style.display = seasons.length > 1 ? 'inline' : 'none';
+  seasonDropdown.style.display = seasons.length > 1 ? 'inline' : 'none';
+}
+        // Populate categories
+        const categories = [...new Set(data.map(row => row.category).filter(Boolean))];
+        categories.forEach(category => {
+          const categoryItem = document.createElement('a');
+          categoryItem.textContent = category;
+          categoryItem.href = `category.html?category=${category}`;
+          categoryList.appendChild(categoryItem);
+        });
+      })
+      .catch(error => {
+        console.error('Error loading video data:', error);
+        document.getElementById('video-title').innerText = "Error loading video";
+      });
+
+    function handleSearch() {
+  const query = searchInput.value.toLowerCase();
+  fetch('https://docs.google.com/spreadsheets/d/13DtVl3qs44uQxP_XX4fUct8E7e2ooO3Pc5fAesY06ek/edit?usp=sharing')
+    .then(response => response.text())
+    .then(text => {
+      const data = parseCSV(text);
+      const filteredVideos = data.filter(video => video.name.toLowerCase().includes(query) && video.thumbnail.trim() !== "");
+      searchResultsContainer.style.display = 'block';
+      searchResultsContainer.innerHTML = '';
+      filteredVideos.slice(0, 5).forEach(video => {
+        const suggestionItem = document.createElement('div');
+        suggestionItem.innerHTML = `
+          <img src="${video.thumbnail}" alt="${video.name}">
+          ${video.name}
+        `;
+        suggestionItem.addEventListener('click', () => {
+          window.location.href = `video.html?id=${video.id}`;
+        });
+        searchResultsContainer.appendChild(suggestionItem);
+      });
+    });
+}
+
+    function handleEnter(event) {
+  if (event.key === 'Enter') {
+    const query = searchInput.value.trim();
+    if (query) {
+      window.location.href = `search-result.html?query=${encodeURIComponent(query)}`;
+    }
+  }
+}
+
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('keydown', handleEnter);
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const dropdown = document.querySelector(".dropdown");
+      const dropdownContent = document.querySelector(".dropdown-content");
+      const navbar = document.querySelector(".navbar");
+
+      // Function to handle scroll and fix navbar
+      let lastScrollTop = 0;
+      window.addEventListener("scroll", function() {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        if (scrollTop > lastScrollTop) {
+          navbar.classList.add("fixed");
+        } else {
+          navbar.classList.remove("fixed");
+        }
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // Prevent negative scroll
+      });
+
+      dropdown.addEventListener("click", function(event) {
+        event.stopPropagation();
+        dropdownContent.style.display = (dropdownContent.style.display === "block") ? "none" : "block";
+      });
+
+      document.addEventListener("click", function(event) {
+        if (!dropdown.contains(event.target)) {
+          dropdownContent.style.display = "none";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
