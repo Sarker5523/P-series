@@ -439,7 +439,7 @@
       return result;
     }
 
-    fetch('https://docs.google.com/spreadsheets/d/13DtVl3qs44uQxP_XX4fUct8E7e2ooO3Pc5fAesY06ek/edit?usp=sharing')
+    fetch('https://docs.google.com/spreadsheets/d/13DtVl3qs44uQxP_XX4fUct8E7e2ooO3Pc5fAesY06ek/export?format=csv')
       .then(response => response.text())
       .then(text => {
         const data = parseCSV(text);
@@ -490,7 +490,7 @@ seasonDropdown.addEventListener('change', function () {
 
 let allEpisodes = []; // Store all episodes of the series
 
-fetch('https://docs.google.com/spreadsheets/d/13DtVl3qs44uQxP_XX4fUct8E7e2ooO3Pc5fAesY06ek/edit?usp=sharing')
+fetch('https://docs.google.com/spreadsheets/d/13DtVl3qs44uQxP_XX4fUct8E7e2ooO3Pc5fAesY06ek/export?format=csv')
   .then(response => response.text())
   .then(text => {
     const data = parseCSV(text);
@@ -558,7 +558,7 @@ function loadSeasons(seasons, currentSeasonId) {
 
     function handleSearch() {
   const query = searchInput.value.toLowerCase();
-  fetch('https://docs.google.com/spreadsheets/d/13DtVl3qs44uQxP_XX4fUct8E7e2ooO3Pc5fAesY06ek/edit?usp=sharing')
+  fetch('https://docs.google.com/spreadsheets/d/13DtVl3qs44uQxP_XX4fUct8E7e2ooO3Pc5fAesY06ek/export?format=csv')
     .then(response => response.text())
     .then(text => {
       const data = parseCSV(text);
