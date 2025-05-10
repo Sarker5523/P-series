@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Category - P-Series</title>
+    <title>Category - MPlix</title>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
         body { 
@@ -190,7 +190,7 @@
             const category = urlParams.get('category');
 
             // Fetch videos from Google Sheets CSV
-            fetch("https://docs.google.com/spreadsheets/d/13DtVl3qs44uQxP_XX4fUct8E7e2ooO3Pc5fAesY06ek/export?format=csv)
+            fetch("https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv")
                 .then(response => response.text())
                 .then(csvText => {
                     Papa.parse(csvText, {
@@ -266,7 +266,7 @@
                 }
 
                 // Fetch search results based on query
-                fetch("https://docs.google.com/spreadsheets/d/13DtVl3qs44uQxP_XX4fUct8E7e2ooO3Pc5fAesY06ek/export?format=csv")
+                fetch("https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv")
                     .then(response => response.text())
                     .then(csvText => {
                         Papa.parse(csvText, {
@@ -310,7 +310,7 @@
 <body>
     <!-- Navbar -->
     <div class="navbar">
-        <div class="logo" onclick="window.location.href = 'index.html'">P-Series</div>
+        <div class="logo" onclick="window.location.href = 'index.html'">MPlix</div>
         <div class="nav-links">
             <a href="index.html">Home</a>
             <div class="dropdown">
