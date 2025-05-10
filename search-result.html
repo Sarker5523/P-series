@@ -196,7 +196,7 @@
       }
     });
 
-    fetch("https://docs.google.com/spreadsheets/d/13DtVl3qs44uQxP_XX4fUct8E7e2ooO3Pc5fAesY06ek/edit?usp=sharing")
+    fetch("https://docs.google.com/spreadsheets/d/13DtVl3qs44uQxP_XX4fUct8E7e2ooO3Pc5fAesY06ek/export?format=csv")
       .then(res => res.text())
       .then(csvText => {
         Papa.parse(csvText, {
