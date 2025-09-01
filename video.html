@@ -439,7 +439,7 @@
       return result;
     }
 
-    fetch('https://docs.google.com/spreadsheets/d/13DtVl3qs44uQxP_XX4fUct8E7e2ooO3Pc5fAesY06ek/export?format=csv')
+    fetch('https://docs.google.com/spreadsheets/d/1T_p9QYMRENHVkcNmkgeBkfmxtwZk5juewDQGZVZM-sQ/export?format=csv')
       .then(response => response.text())
       .then(text => {
         const data = parseCSV(text);
